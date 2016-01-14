@@ -1,62 +1,51 @@
-// examples are from here: http://linoxide.com/how-tos/d-bus-ipc-mechanism-linux/
-#include <glib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include <dbus/dbus.h>
-
-int main()
+int main (int argc, char **argv)
 {
-    DBusConnection *connection;
-    DBusError error;
-
-    char *name = "ethereum.listener";
-    dbus_error_init(&error);
-    connection = dbus_bus_get(DBUS_BUS_SESSION, &error);
-
-    if (dbus_error_is_set(&error)) {
-        printf("Error connecting to the daemon bus: %s", error.message);
-        dbus_error_free(&error);
-        return 1;
+    if (argc != 2) {
+        goto fail_wrong_args;
     }
 
-    dbus_bool_t ret = dbus_bus_name_has_owner(connection, name, &error);
-    if (dbus_error_is_set(&error)) {
-        dbus_error_free(&error);
-        printf("DBus Error: %s\n", error.message);
-        return 1;
+    int sock;
+    struct sockaddr_un server;
+    char buf[1024];
+
+    sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (sock < 0) {
+         perror("opening stream socket");
+         exit(1);
+    }
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, argv[1]);
+
+    if (connect(sock, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) < 0) {
+        close(sock);
+        perror("connecting stream socket");
+        exit(1);
     }
 
-    if (ret == FALSE) {
-        printf("Bus name %s doesn't have an owner, reserving it...\n", name);
-
-        int request_name_reply =
-            dbus_bus_request_name(
-                connection,
-                name,
-                DBUS_NAME_FLAG_DO_NOT_QUEUE,
-                &error
-            );
-
-        if (dbus_error_is_set(&error)) {
-            dbus_error_free(&error);
-            printf("Error requesting a bus name: %s\n", error.message);
-            return 1;
-        }
-
-        if ( request_name_reply == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER ) {
-            printf("Bus name %s Successfully reserved!\n",name);
-            return 0;
-        } else {
-            printf("Failed to reserve name %s\n",name);
-            return 1;
-        }
-
-    } else {
-        // either our app is already running or someone stole the name
-        printf("%s is already reserved\n", name);
-        return 1;
+    static const char blocknum[] = "{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":83}";
+    if (write(sock, blocknum, sizeof(blocknum)) < 0) {
+        perror("writing on stream socket");
+        close(sock);
+        exit(1);
+    }
+    if (read(sock, buf, 1024) < 0) {
+        perror("reading from stream socket");
+        close(sock);
+        exit(1);
     }
 
+    printf("Result: %s\n", buf);
+    close(sock);
     return 0;
 
+fail_wrong_args:
+    printf("Usage: %s blocknumber", argv[0]);
+    exit(1);
 }

@@ -1,10 +1,46 @@
+# Pssibled parameters:
+#
+# WITH_DBUS [ 1 | 0 ]
+# ARCH      [ x86 | armhf ]
+#    -x86 is basically the local machine
+#    -armhf will only work for cross compiling to arm with the ubuntu cross compile toolchain
+#
 OUT_NAME=listener
 
-listener:
-	gcc main.c -o $(OUT_NAME)  -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -ldbus-1 -ldbus-glib-1 -Wall -Wextra -lglib-2.0 -lgio-2.0 -lgobject-2.0 -lgthread-2.0
+ARCH=x86
+CC=gcc
+INCLUDES=
+LIBRARIES=
+CCFLAGS=-Wall -Wextra
 
-listener-arm:
-	arm-linux-gnueabihf-gcc main.c -o $(OUT_NAME) -I/usr/include/dbus-1.0  -I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include/ -ldbus-1 -ldbus-glib-1 -Wall -Wextra -lglib-2.0 -lgio-2.0 -lgobject-2.0 -lgthread-2.0
+# Set the compiler
+ifeq ($(ARCH),armhf)
+	CC=arm-linux-gnueabihf-gcc
+endif
+
+# Set our includes
+ifeq ($(WITH_DBUS),1)
+	ifeq ($(ARCH),x86)
+		INCLUDES+=$(shell pkg-config dbus-1 --cflags)
+	else ifeq ($(ARCH),armhf)
+		INCLUDES+=-I/usr/include/dbus-1.0  -I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include
+	else
+		$(error Unrecognized value for ARCH variable)
+	endif
+endif
+
+# Set Libraries
+ifeq ($(WITH_DBUS),1)
+	LIBRARIES+=-ldbus-1
+endif
+
+SOURCES=main.c
+ifeq ($(WITH_DBUS),1)
+	SOURCES+=dbus.c
+endif
+
+listener: $(SOURCES)
+	$(CC) $(SOURCES) -o $(OUT_NAME)  $(INCLUDES) $(CCFLAGS) $(LIBRARIES)
 
 
 .PHONY: clean

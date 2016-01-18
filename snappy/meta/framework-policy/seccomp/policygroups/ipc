@@ -1,0 +1,15 @@
+# Added by Lefteris
+bind
+connect
+socket
+setsockopt
+getsockopt
+send
+sendto
+sendmsg
+getsockname
+recvfrom
+getpeername
+listen
+accept4
+accept

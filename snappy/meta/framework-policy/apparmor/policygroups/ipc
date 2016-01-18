@@ -1,0 +1,6 @@
+#
+# AppArmor security policy for clients using the ethereum framework
+#
+
+# read and write to the unix socket opened by the client
+/var/lib/apps/@{APP_PKGNAME}/@{APP_VERSION}/.ethereum/geth.ipc rw,

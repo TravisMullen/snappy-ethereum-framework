@@ -4,14 +4,11 @@ architectures: [amd64, armhf]
 version: 0.1
 type: framework
 services:
-# - name: listener
-#   description: "Service that listens to and forwards messages to the running client"
-#   start: ./bin/listener
-#   bus-name: ethereum.listener
 
 - name: geth
   start: ./bin/geth
   description: "The Go Ethereum client"
-  security-policy:
-    apparmor: meta/geth.apparmor
-    seccomp: meta/geth.seccomp
+  caps:
+    - network-client
+    - network-service
+    - network-admin

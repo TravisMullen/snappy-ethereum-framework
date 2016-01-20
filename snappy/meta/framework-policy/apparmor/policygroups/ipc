@@ -3,4 +3,8 @@
 #
 
 # read and write to the unix socket opened by the client
-/var/lib/apps/@{APP_PKGNAME}/@{APP_VERSION}/.ethereum/geth.ipc rw,
+/var/lib/apps/ethereum/current/.ethereum/geth.ipc rw,
+
+# When running ethereum snapps that try to overwrite a file
+# I get a request for dac_override so adding it here
+# capability dac_override,

@@ -13,3 +13,7 @@ getpeername
 listen
 accept4
 accept
+read
+readv
+write
+writev

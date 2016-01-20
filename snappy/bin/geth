@@ -37,12 +37,14 @@ snapp_bin=`basename $snapp_bin_path`
 snapp_dir=$SNAP_APP_PATH
 snapp_name=`echo $snapp_bin | sed -e 's/\(.*\)[.]\([^.]*\)$/\1/g'`
 snapp_org_bin=`echo $snapp_bin | sed -e 's/\(.*\)[.]\([^.]*\)$/\2/g'`
+ip_address=`ifconfig eth0 | awk -F':' '/inet addr/&&!/127.0.0.1/{split($2,_," ");print _[1]}'`
 
 $verbose && echo snapp_name: $snapp_name
 $verbose && echo snapp_bin: $snapp_bin
 $verbose && echo snapp_dir: $snapp_dir
 $verbose && echo snapp_org_bin: $snapp_org_bin
 $verbose && echo plat_abi: $plat_abi
+$verbose && echo ip_address: $ip_address
 
 PATH="$snapp_dir/bin/$plat_abi/:$PATH"
 LD_LIBRARY_PATH="$snapp_dir/lib/$plat_abi/:$LD_LIBRARY_PATH"
@@ -52,7 +54,7 @@ export PATH LD_LIBRARY_PATH
 cd $snapp_dir
 
 # fire the binary
-exec $snapp_bin "$@"
+exec $snapp_bin "$@" --datadir "$SNAP_APP_DATA_PATH/.ethereum" --ipcpath "$SNAP_APP_DATA_PATH/.ethereum/geth.ipc" --rpc --rpcaddr "$ip_address" --rpcport "8545" --rpccorsdomain "http://$ip_address"
 
 # never reach this
 exit 1

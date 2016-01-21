@@ -1,4 +1,11 @@
-src/listener
-snappy/*.snap
-snappy/bin/arm-linux-gnueabihf/geth
-snappy/bin/x86_64-linux-gnu/geth
+# Ignore generated snap
+*.snap
+# Ignore snapcraft process directories
+# Normally all parts/ can be ignored but we have a custom
+# plugin there for now. If it ever goes to snapcraft
+# upstream this can be adjusted.
+parts/plugins/__pycache__/
+parts/geth
+parts/files-to-copy
+snap/
+stage/

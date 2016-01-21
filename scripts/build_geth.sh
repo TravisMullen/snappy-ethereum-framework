@@ -47,15 +47,9 @@ if [ ! -e "build/bin/geth" -o ! -e "build/bin/geth-linux-arm-7" ]; then
     exit 1
 fi
 
-echo "WOULD HAVE: mkdir -p $DEST_DIR/x86_64-linux-gnu/ && cp build/bin/geth $_/geth";
-echo "NOW TRYING: mkdir -p $DEST_DIR/x86_64-linux-gnu/ && cp build/bin/geth $DEST_DIR/x86_64-linux-gnu/geth";
 mkdir -p $DEST_DIR/x86_64-linux-gnu/ && cp build/bin/geth $DEST_DIR/x86_64-linux-gnu/geth;
-echo "WOULD HAVE: mkdir -p $DEST_DIR/arm-linux-gnueabihf/ && cp build/bin/geth-linux-arm-7 $_/geth";
-echo "NOW TRYING: mkdir -p $DEST_DIR/arm-linux-gnueabihf/ && cp build/bin/geth-linux-arm-7 $DEST_DIR/arm-linux-gnueabihf/geth";
 mkdir -p $DEST_DIR/arm-linux-gnueabihf/ && cp build/bin/geth-linux-arm-7 $DEST_DIR/arm-linux-gnueabihf/geth;
 
-# cp --parents build/bin/geth $DEST_DIR/x86_64-linux-gnu/geth
-# cp --parents build/bin/geth-linux-arm-7 $DEST_DIR/arm-linux-gnueabihf/geth
 if [ $? -ne 0 ]; then
     echo "build_geth - ERROR: Could not properly copy the produced binaries";
     exit 1

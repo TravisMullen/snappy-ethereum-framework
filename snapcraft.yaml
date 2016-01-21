@@ -6,6 +6,7 @@ architectures: [amd64, armhf]
 icon: icon.png
 version: 0.1
 type: framework
+framework-policy: framework-policy/
 
 parts:
   geth:

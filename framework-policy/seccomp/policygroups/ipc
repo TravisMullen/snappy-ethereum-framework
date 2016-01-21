@@ -1,4 +1,6 @@
-# Added by Lefteris
+# Description: System calls required by snapps to communicate with the ethereum framework via IPC
+# Usage: reserved
+
 bind
 connect
 socket

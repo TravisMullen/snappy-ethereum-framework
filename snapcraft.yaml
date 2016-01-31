@@ -7,6 +7,7 @@ icon: icon.png
 version: 0.1
 type: framework
 framework-policy: framework-policy/
+config: bin/configurator
 
 parts:
   geth:
@@ -18,14 +19,25 @@ parts:
     plugin: copy
     files:
       scripts/geth_selector.sh: bin/geth
-      
+      scripts/configurator.py: bin/configurator
+
+  configurator:
+    plugin: python2
+    python-packages:
+      - PyYAML
 
 services:
 
   geth:
     start: ./bin/geth
     description: "The Go Ethereum client"
+    # network-admin is needed for the ifconfig command inside selector script
+    # if we end up not using it network-admin can go
     caps:
       - network-client
       - network-service
       - network-admin
+
+binaries:
+  configurator:
+    exec: bin/configurator

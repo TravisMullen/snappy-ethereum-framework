@@ -7,5 +7,6 @@
 parts/plugins/__pycache__/
 parts/geth
 parts/files-to-copy
+parts/configurator
 snap/
 stage/

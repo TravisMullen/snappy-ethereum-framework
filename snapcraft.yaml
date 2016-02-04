@@ -4,7 +4,7 @@ description: A framework providing all the essentials needed in order to develop
 vendor: Lefteris <lefteris@refu.co>
 architectures: [amd64, armhf]
 icon: icon.png
-version: 0.1
+version: 0.1.2
 type: framework
 framework-policy: framework-policy/
 config: bin/configurator
@@ -37,7 +37,3 @@ services:
       - network-client
       - network-service
       - network-admin
-
-binaries:
-  configurator:
-    exec: bin/configurator

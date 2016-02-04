@@ -3,8 +3,8 @@ summary: An Ethereum framework for Snappy Ubuntu
 description: A framework providing all the essentials needed in order to develop for and interact with the Ethereum blockchain
 vendor: Lefteris <lefteris@refu.co>
 architectures: [amd64, armhf]
-icon: icon.png
-version: 0.1.2
+icon: ethereum_icon.png
+version: 0.1.4
 type: framework
 framework-policy: framework-policy/
 config: bin/configurator

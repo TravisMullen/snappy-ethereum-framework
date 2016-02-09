@@ -19,7 +19,8 @@ parts:
     plugin: copy
     files:
       scripts/geth_selector.sh: bin/geth
-      scripts/configurator.py: bin/configurator
+      config/configurator.py: bin/configurator
+      config/default_config.yaml: config/default_config.yaml
 
   configurator:
     plugin: python2

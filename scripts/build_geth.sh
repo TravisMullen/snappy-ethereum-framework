@@ -7,7 +7,8 @@
 #                  is the destination directory into which the script itself
 #                  is responsible of copying the results
 #
-# WARNING: This script will eventually invoke docker since it's used
+# WARNING: If you build any architectures with make other than the native one
+#          or armhf, this script will eventually invoke docker since it's used
 #          by geth's makefile for cross-compiling. Either run it with sudo
 #          or better yet follow this guide to allow non-root user invocation
 #          of the docker daemon:
@@ -34,9 +35,18 @@ if [ $? -ne 0 ]; then
 fi
 
 
-make geth geth-linux-arm-7
+make geth
 if [ $? -ne 0 ]; then
     echo "build_geth - ERROR: Could not build geth";
+    exit 1
+fi
+
+# Do not use the makefile for geth-linux-arm-7. Assume user has properly
+# setup cross compiling for armhf and this way we avoid docker at least for
+# the time being
+CGO_ENABLED=1 CC=arm-linux-gnueabihf-gcc-5 CXX=arm-linux-gnueabihf-g++-5 GOARCH=arm GOARM=7 build/env.sh go build -o build/bin/geth-linux-arm-7 ./cmd/geth
+if [ $? -ne 0 ]; then
+    echo "build_geth - ERROR: Could not build geth-linux-arm-7";
     exit 1
 fi
 

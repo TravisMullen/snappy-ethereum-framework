@@ -34,7 +34,13 @@ services:
     description: "The Go Ethereum client"
     # network-admin is needed for the ifconfig command inside selector script
     # if we end up not using it network-admin can go
-    caps:
-      - network-client
-      - network-service
-      - network-admin
+    # caps:
+    #   - network-client
+    #   - network-service
+    #   - network-admin
+
+    # This is a hack. Normally required caps are above. We have this here temporarily
+    # only to allow unconfined access to /root/.ethereum and not bother with permissions
+    # only until the introduction of a common "shared" directory for all versions of a snap
+    # which is expected to happen in 16.xx version.
+    security-template: unconfined

@@ -53,8 +53,12 @@ export PATH LD_LIBRARY_PATH
 # make cwd the snapp dir
 cd $snapp_dir
 
-# fire the binary
-exec $snapp_bin "$@" --datadir "$SNAP_APP_DATA_PATH/.ethereum" --ipcpath "$SNAP_APP_DATA_PATH/.ethereum/geth.ipc" --rpc --rpcaddr "$ip_address" --rpcport "8545" --rpccorsdomain "http://$ip_address"
+# fire up the binary
+# exec $snapp_bin "$@" --datadir "$SNAP_APP_DATA_PATH/.ethereum" --ipcpath "$SNAP_APP_DATA_PATH/.ethereum/geth.ipc" --rpc --rpcaddr "$ip_address" --rpcport "8545" --rpccorsdomain "http://$ip_address"
+# temporarily write to /root/.ethereum until the introduction of a common "shared"
+# directory for all versions of a snap which is expected to happen in 16.xx version.
+exec $snapp_bin "$@" --datadir "/root/.ethereum" --ipcpath "/root/.ethereum/geth.ipc" --rpc --rpcaddr "$ip_address" --rpcport "8545" --rpccorsdomain "http://$ip_address"
+
 
 # never reach this
 exit 1

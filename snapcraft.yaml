@@ -4,7 +4,7 @@ description: A framework providing all the essentials needed in order to develop
 vendor: Lefteris <lefteris@refu.co>
 architectures: [amd64, armhf]
 icon: ethereum_icon.png
-version: 0.1.4
+version: 0.1.5
 type: framework
 framework-policy: framework-policy/
 config: bin/configurator

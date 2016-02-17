@@ -2,18 +2,22 @@
 
 import yaml
 import os
+import sys
 import argparse
+import select
+
 
 def assert_file_exists_and_write_yaml(filename, yamldata):
     if not os.path.exists(os.path.dirname(filename)):
         try:
             os.makedirs(os.path.dirname(filename))
-        except OSError as exc: # Guard against race condition
-            if exc.errno != errno.EEXIST:
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != exc.errno.EEXIST:
                 raise
 
     with open(filename, "w") as f:
         f.write(yaml.dump(yamldata, default_flow_style=False))
+
 
 def get_config_yaml_data():
     data_path = os.environ.get('SNAP_APP_DATA_PATH')
@@ -35,18 +39,19 @@ def get_config_yaml_data():
         assert_file_exists_and_write_yaml(config_path, data)
     return data
 
+
 def print_current_config():
     data = get_config_yaml_data()
-    print(data)
+    print(yaml.dump(data, default_flow_style=False))
 
 
-def set_new_config(newfile):
+def set_new_config(newdata):
+    data_path = os.environ.get('SNAP_APP_DATA_PATH')
     config_path = os.path.join(data_path, 'config', 'config.yaml')
-    data = None
-    with open(newfile, 'r') as f:
-        data = yaml.load(f)
+    data = yaml.load(newdata)
     # no checks for now, simply write the new config
     assert_file_exists_and_write_yaml(config_path, data)
+
 
 def retrieve_config_val(key):
     data = get_config_yaml_data()
@@ -54,31 +59,33 @@ def retrieve_config_val(key):
     try:
         val = data['config']['ethereum'][key]
     except:
-        print("Could not find key {} in the configuration file".format(key))
+        print("ERROR: Couldn't find key {} in the config file".format(key))
         sys.exit(1)
-
     print(val)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Configure script for ethereum framework.')
+    input_bytes = []
+    if select.select([sys.stdin, ], [], [], 0.0)[0]:
+        input_bytes = sys.stdin.read()
+    parser = argparse.ArgumentParser(
+        description='Configurator for the ethereum framework.'
+    )
     parser.add_argument(
-        'new_config',
-        type=file,
+        '--get',
+        choices=['extra-args', 'rpc-port'],
         nargs='?',
-        help='The new config yaml file to load'
+        default=[],
+        help='Query specific config value'
     )
-    parser.add_argument(
-        '--extra-geth-args',
-        action='store_true',
-        help='Retrieve any extra arguments to send to geth from the configuration'
-    )
+
     args = parser.parse_args()
 
-
-    if args.new_config:
-        set_new_config()
-    elif args.extra_geth_args:
-        retrieve_config_val('extra_geth_args')
+    if args.get == []:
+        # We got no command line arguments, config from stdin the snappy way
+        if len(input_bytes) != 0:
+            set_new_config(input_bytes)
+        else:
+            print_current_config()
     else:
-        print_current_config()
+        retrieve_config_val(args.get)

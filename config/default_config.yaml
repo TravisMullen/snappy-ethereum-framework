@@ -1,3 +1,4 @@
 config:
   ethereum:
-    extra_geth_args: ''
+    extra-args: ''
+    rpc-port: 8545
